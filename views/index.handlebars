@@ -1,0 +1,46 @@
+<body>
+
+		<h1>Eat-Da-Burger</h1>
+
+			<h3>Which burger will you devour?</h3>
+
+			<!-- Pass in data from server.js -->
+			<ol>
+				{{#each burgers}}
+					{{#unless devoured}}
+					  	<li>
+					  	  <p><span class="burger_list_item"></span> {{burger_name}}</p>
+
+					      <button data-id="{{id}}" class="devour-burger" data-newDevoured="{{devoured}}">Devour!</button>
+
+					  	</li>
+					{{/unless}}
+				{{/each}}
+			</ol>
+
+			<h3>Devoured Burgers</h3>
+
+				<ol>
+					{{#each burgers}}
+						{{#if devoured}}
+						  	<li>
+						  	  {{burger_name}}
+						  	</li>
+						{{/if}}
+					{{/each}}
+				</ol>
+
+			
+			<h3>Add a burger!</h3>
+
+			<form class="create-form">
+
+			  <div class="form-group">
+			    <label for="user-burger-input">Burger type: </label>
+			    <input type="text" id="user-burger-input" name="name">
+			  </div>
+
+			  <button id="submit-burger" type="submit">Submit</button>
+			</form>
+
+	</body>

@@ -1,67 +1,30 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 
-var app = express();
-var port = 3000;
+var PORT = process.env.PORT || 3000;
 
-// Sets up the Express app to handle data parsing
+var app = express();
+
+// Serve static content for the app from the "public" directory in the application directory.
+app.use(express.static("public"));
+
+// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
 app.use(bodyParser.json());
 
+// Set Handlebars.
 var exphbs = require("express-handlebars");
 
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-var mysql = require("mysql");
+// Import routes and give the server access to them.
+var routes = require("./controllers/burgers_controller.js");
 
-var connection = mysql.createConnection({
-  host: "localhost",
-  port: 8889,
-  user: "root",
-  password: "root",
-  database: "task_saver_db"
+app.use(routes);
+
+app.listen(PORT, function() {
+  console.log("App now listening at localhost:" + PORT);
 });
-
-connection.connect(function(err) {
-  if (err) {
-    console.error("error connecting: " + err.stack);
-    return;
-  }
-
-    console.log("connected as id " + connection.threadId);
-});
-
-app.get("/", function(req, res) {
-  connection.query("SELECT * FROM tasks;", function(err, data) {
-    if (err) throw err;
-
-    // Test it
-    // console.log('The solution is: ', data);
-
-    // Test it
-    // return res.send(data);
-
-    res.render("index", { tasks: data });
-  });
-});
-
-// Post route -> back to home
-app.post("/", function(req, res) {
-  // Test it
-  // console.log('You sent, ' + req.body.task);
-
-  // Test it
-  // return res.send('You sent, ' + req.body.task);
-
-  // When using the MySQL package, we'd use ?s in place of any values to be inserted, which are then swapped out with corresponding elements in the array
-  // This helps us avoid an exploit known as SQL injection which we'd be open to if we used string concatenation
-  // https://en.wikipedia.org/wiki/SQL_injection
-  connection.query("INSERT INTO tasks (task) VALUES (?)", [req.body.task], function(err, result) {
-    if (err) throw err;
-
-    res.redirect("/");
-  });
-});
-
-app.listen(port);
